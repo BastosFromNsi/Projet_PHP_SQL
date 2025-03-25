@@ -4,13 +4,14 @@ session_start();
 ini_set('display_errors', 1);
 // Afficher les erreurs et les avertissements
 error_reporting(E_ALL);
-header("Location: register.php");
+
+//suppression du premier header
 
 if (isset($_SESSION['userId'])) {
     header("Location: dashboard.php");
+    exit();
 } else {
     header("Location: login.php");
+    exit();
 }
-exit();
-
 ?>

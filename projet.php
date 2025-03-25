@@ -1,88 +1,54 @@
 <?php
 
-session_start();
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require_once 'Model/pdo.php';
 
-//affiche nom et prenom des etudiants - Partie 2
-
-$resultat = $dbPDO->prepare("SELECT id, nom, prenom FROM etudiants");
-$resultat->execute();
-$etudiants = $resultat->fetchAll(PDO::FETCH_ASSOC);
-
-echo "<ul>";
-foreach ($etudiants as $etudiant) {
-    echo "<li>" . htmlspecialchars($etudiant['nom']) . " " . htmlspecialchars($etudiant['prenom']) .
-        " <a href='Views/modif_etudiant.php?id=" . urlencode($etudiant['id']) . "'>Modifier</a>" .   // lien pour modifier l'étudiant
-        " <a href='Views/suppression_etudiant.php?id=" . urlencode($etudiant['id']) . "' onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?');\">Supprimer</a></li>";  // lien pour supprimer l'étudiant
+// tp 10 - Partie 2
+try {
+    $resultat = $dbPDO->query("SELECT * FROM `user`");
+    $users = $resultat->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    echo "Erreur : " . $e->getMessage();
+    $users = [];
 }
-echo "</ul>";
-
-//affiche les classes
-$resultatClasses = $dbPDO->prepare("SELECT libelle FROM classes");
-$resultatClasses->execute();
-
-$classes = $resultatClasses->fetchAll(PDO::FETCH_ASSOC);
-
-echo "<h2>Liste des classes :</h2>";
-echo "<ul>";
-foreach ($classes as $classe) {
-    echo "<li>" . htmlspecialchars($classe['libelle']) . "</li>";
-}
-echo "</ul>";
-
-//afficher la liste de tout les profs
-
-$resultatProfs = $dbPDO->prepare("SELECT prenom, nom FROM professeurs");
-$resultatProfs->execute();
-
-$professeurs = $resultatProfs->fetchAll(PDO::FETCH_ASSOC);
-
-echo "<h2>Liste des professeurs :</h2>";
-echo "<ul>";
-foreach ($professeurs as $professeur) {
-    echo "<li>" . htmlspecialchars($professeur['prenom']) . " " . htmlspecialchars($professeur['nom']) . "</li>";
-}
-echo "</ul>";
-
-// ajout de la nouvelle matière
-
-$ajoutMatiere = $dbPDO->prepare("INSERT INTO matiere (id, lib) VALUES (NULL, :lib)");
-$libMatiere = 'Mathématiques';
-$ajoutMatiere->bindParam(':lib', $libMatiere, PDO::PARAM_STR);
-$ajoutMatiere->execute();
 ?>
 
-<!-- Partie 3 -->
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter une matière</title>
+    <title>Projet - Liste des utilisateurs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+    <script defer src="https://cdn.tailwindcss.com"></script>
+    <script defer src="tailwind.config.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </head>
 
-<body>
-    <h1>Ajouter une nouvelle matière</h1>
-    <form action="Views/nouvelle_matiere.php" method="POST">
-        <label for="libelle">Libellé :</label>
-        <input type="text" id="libelle" name="libelle" required>
-        <button type="submit">Valider</button>
-    </form>
-
-    <h2>Ajouter un nouvel élève</h2>
-    <form action="Views/nouvel_etudiant.php" method="POST">
-        <label for="nom">Nom :</label>
-        <input type="text" id="nom" name="nom" required>
-        <label for="prenom">Prénom :</label>
-        <input type="text" id="prenom" name="prenom" required>
-        <button type="submit">Valider</button>
-    </form>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Liste des utilisateurs</h1>
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">ID</th>
+                        <th scope="col" class="px-6 py-3">Email</th>
+                        <th scope="col" class="px-6 py-3">Mot de passe (crypté)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($users as $user): ?>
+                        <tr class="bg-white border-b">
+                            <td class="px-6 py-4"><?php echo htmlspecialchars($user['id']); ?></td>
+                            <td class="px-6 py-4"><?php echo htmlspecialchars($user['email']); ?></td>
+                            <td class="px-6 py-4"><?php echo htmlspecialchars($user['password']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 
 </html>
