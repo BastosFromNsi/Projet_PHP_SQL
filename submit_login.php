@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Vérifier les données POST
 $post = $_POST;
 
 if (isset($post['email']) && isset($post['password'])) {
