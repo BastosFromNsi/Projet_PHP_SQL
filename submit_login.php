@@ -1,5 +1,7 @@
 <?php
+session_start();
 
+// Vérifier les données POST
 $post = $_POST;
 
 if (isset($post['email']) && isset($post['password'])) {
@@ -13,13 +15,12 @@ if (isset($post['email']) && isset($post['password'])) {
 
         $rows = $resultat->rowCount();
         if ($rows > 0) {
-            echo "<pre>L'utilisateur a bien été trouvé</pre>";
-
             $user = $resultat->fetch();
 
+
             if ($user['password'] === sha1($post['password'])) {
-                echo "<pre>Le password est ok !</pre>";
-                header('Location: dashboard.php');
+                $_SESSION['userId'] = $user['id'];  // changement : on initialise la session avec l'id de l'utilisateur
+                header('Location: dashboard.php'); 
                 exit();
             } else {
                 echo "<pre>Mot de passe incorrect.</pre>";
@@ -32,6 +33,8 @@ if (isset($post['email']) && isset($post['password'])) {
     }
 } else {
     echo "Données manquantes.";
-    header('Location: login.php');
+    header('Location: login.php'); 
     exit();
 }
+?>
+
